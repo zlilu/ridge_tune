@@ -1,25 +1,55 @@
 import sys
-from mini_model import MiniModel
-from chap_core.model_spec import get_dataclass
+import yaml
+from ridge_tune import RidgeTune
 from chap_core.datatypes import create_tsdataclass
 
 def main():
-    dc = get_dataclass(estimator)
-    print("-----------___________inside main")
-    argv = sys.argv
-    print("-----", argv)
-    print("type: ", type(argv[2]))
-    if not argv[1:]:
+    """
+    Train a model using historic data
+
+    Parameters
+    ----------
+    training_data_filename: str
+        The path to the training data file
+    model_path: str
+        The path to save the trained model
+    """
+    print("--------------------------start main")
+    argv = sys.argv[1:]
+    if not argv:
         raise SystemExit("usage: train|predict ...")
-    
-    model = MiniModel()
     cmd, *rest = argv 
     if cmd == "train":
-        model.train(*rest)
-    elif cmd == "predict":
-        model.predict(*rest)
+        print("-----------start train")
+        training_data_filename: str = rest[0]
+        model_path: str = rest[1]
+        model_config_path: str = rest[2]
+        
+        model_config = _read_model_config(model_config_path)
+        estimator = RidgeTune(model_config)
+        predictor = estimator.train()
+        print("-----------finish train")
+    elif cmd == "predict":  
+        historic_data_path: str = rest[0]
+        future_data_path: str = rest[1]
+        predictor.predict(historic_data_path, future_data_path)
     else:
         raise SystemExit(f"unknown command {cmd}")
+    
+    def _get_dataclass(estimator):
+        target: str = "disease_cases"
+        data_fields = estimator.covariate_names + [target]
+        dc = create_tsdataclass(data_fields)
+        return dc
+
+    def _read_model_config(model_config_path):
+        if model_config_path is not None:
+            with open(model_config_path, "r") as file:
+                model_config = yaml.safe_load(file)
+        else:
+            model_config = {}
+        return model_config
+        # return ModelConfiguration.model_validate(model_config)
 
 
 if __name__ == "__main__":

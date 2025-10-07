@@ -1,0 +1,18 @@
+name: hpo_min_py_ex
+
+entry_points:
+  train:
+    command: python main.py train {train_data} {model} {model_config}
+    parameters:
+      train_data: str
+      model: str
+      model_config: str
+  predict:
+    command: python main.py predict {model} {historic_data} {future_data} {out_file} {model_config}
+    parameters:
+      model: str
+      historic_data: str
+      future_data: str
+      out_file: str
+      model_config: str
+python_env: pyenv.yaml

@@ -3,15 +3,14 @@ import argparse
 import joblib
 import pandas as pd
 
-def predict(model_fn, historic_data_fn, future_climatedata_fn, predictions_fn):
-    df = pd.read_csv(future_climatedata_fn)
-    X = df[['rainfall', 'mean_temperature']]
-    model = joblib.load(model_fn)
-
-    y_pred = model.predict(X)
-    df['sample_0'] = y_pred
-    df.to_csv(predictions_fn, index=False)
-    print("Predictions: ", y_pred)
+def predict(self, historic_data, future_data, out_file):
+        df = pd.read_csv(future_data)
+        X = df[['rainfall', 'mean_temperature']]
+        y_pred = self.model.predict(X)
+        df['sample_0'] = y_pred # can write this to file
+        print("Predictions: ", y_pred)
+        df.to_csv(out_file, index=False)
+        print("-----wrote to:", out_file)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Predict using the trained model.')

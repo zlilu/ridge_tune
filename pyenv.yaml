@@ -9,3 +9,5 @@ build_dependencies:
 dependencies:
   - scikit-learn==1.6.1
   - joblib==1.4.2
+  - PyYAML>=6.0 # added 10.14 after fetch master
+  - pandas>=2.2 # added 10.14

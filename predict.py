@@ -7,13 +7,13 @@ from sklearn.metrics import root_mean_squared_error
 def predict(model_fn: str, historic_data: str, future_data: str, out_file: str): # model_config is given in MLproject not sure why
     df = pd.read_csv(future_data)
     X = df[['rainfall', 'mean_temperature']]
-    y_val = df['disease_cases']
+    # y_val = df['disease_cases'] # this must happen outside otherwise chap-core errors, prop bc dataset sent to predict is without gold label
     model = joblib.load(model_fn)
     y_pred = model.predict(X)
     df['sample_0'] = y_pred # not sure why return future_data and sample_0
     df.to_csv(out_file, index=False)
     # print("Predictions: ", y_pred)
-    return -root_mean_squared_error(y_val, y_pred)
+    # return -root_mean_squared_error(y_val, y_pred)
 
 
 if __name__ == "__main__":
